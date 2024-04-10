@@ -4,9 +4,12 @@ import fem.sns.member.application.MemberReadService;
 import fem.sns.member.application.MemberWriteService;
 import fem.sns.member.domain.Member;
 import fem.sns.member.framework.web.request.RegisterMemberRequest;
+import fem.sns.member.framework.web.response.MemberNicknameHistoryResponse;
 import fem.sns.member.framework.web.response.MemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +33,13 @@ public class MemberController {
     public MemberResponse changeNickname(@PathVariable Long id, @RequestBody String nickname) {
         Member member = memberWriteService.changeNickname(id, nickname);
         return MemberResponse.from(member);
+    }
+
+    @GetMapping("/{memberId}/nicname-histories")
+    public List<MemberNicknameHistoryResponse> getNicknameHistories(@PathVariable Long memberId) {
+        return memberReadService.getNicknameHistories(memberId)
+                .stream()
+                .map(MemberNicknameHistoryResponse::from)
+                .toList();
     }
 }
