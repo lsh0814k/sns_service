@@ -19,7 +19,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberJdbTemplateRepository implements MemberRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final static String TABLE = "Member";
+    private static final String TABLE = "Member";
+    private static final RowMapper<Member> ROW_MAPPER = (resultSet, rownum) ->
+            Member.builder()
+                    .id(resultSet.getLong("id"))
+                    .email(resultSet.getString("email"))
+                    .nickname(resultSet.getString("nickname"))
+                    .birthDay(resultSet.getObject("birthday", LocalDate.class))
+                    .build();
     @Override
     public Member save(Member member) {
         if (member.getId() == null) {
@@ -33,14 +40,7 @@ public class MemberJdbTemplateRepository implements MemberRepository {
     public Optional<Member> findById(Long id) {
         String sql = String.format("select * from %s where id = :id", TABLE);
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        RowMapper<Member> rowMapper = (resultSet, rownum) ->
-                Member.builder()
-                    .id(resultSet.getLong("id"))
-                    .email(resultSet.getString("email"))
-                    .nickname(resultSet.getString("nickname"))
-                    .birthDay(resultSet.getObject("birthday", LocalDate.class))
-                    .build();
-        Member member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
+        Member member = namedParameterJdbcTemplate.queryForObject(sql, params, ROW_MAPPER);
 
         return Optional.ofNullable(member);
     }
@@ -49,6 +49,18 @@ public class MemberJdbTemplateRepository implements MemberRepository {
     public Member getById(Long id) {
         Optional<Member> memberOptional = findById(id);
         return memberOptional.orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+    }
+
+    @Override
+    public List<Member> findAllByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        String sql = String.format("select * from %s where id in (:ids)", TABLE);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("ids", ids);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
 
     private Member insert(Member member) {
@@ -68,11 +80,13 @@ public class MemberJdbTemplateRepository implements MemberRepository {
     }
 
     private Member update(Member member) {
-        String sql = String.format("update %s set email = :email, nickname = :nickname, birthday = :birthday " +
+        String sql = String.format("update %s set email = :email, nickname = :nickname, birthDay = :birthDay " +
                 "where id = :id", TABLE);
         SqlParameterSource params = new BeanPropertySqlParameterSource(member);
         namedParameterJdbcTemplate.update(sql, params);
 
         return member;
     }
+
+
 }

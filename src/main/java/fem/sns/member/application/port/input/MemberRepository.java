@@ -2,6 +2,7 @@ package fem.sns.member.application.port.input;
 
 import fem.sns.member.domain.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository {
@@ -10,4 +11,6 @@ public interface MemberRepository {
     Optional<Member> findById(Long id);
 
     Member getById(Long id);
+
+    List<Member> findAllByIdIn(List<Long> ids);
 }

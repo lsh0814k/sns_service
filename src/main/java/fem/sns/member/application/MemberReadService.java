@@ -22,4 +22,8 @@ public class MemberReadService {
     public List<MemberNicknameHistory> getNicknameHistories(Long memberId) {
         return memberNicknameHistoryRepository.findAllByMemberId(memberId);
     }
+
+    public List<Member> findAllByIdIn(List<Long> ids) {
+        return memberRepository.findAllByIdIn(ids);
+    }
 }
