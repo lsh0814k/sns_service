@@ -25,4 +25,10 @@ public class MemberController {
         Member member = memberReadService.getMember(id);
         return MemberResponse.from(member);
     }
+
+    @PutMapping("/{id}")
+    public MemberResponse changeNickname(@PathVariable Long id, @RequestBody String nickname) {
+        Member member = memberWriteService.changeNickname(id, nickname);
+        return MemberResponse.from(member);
+    }
 }

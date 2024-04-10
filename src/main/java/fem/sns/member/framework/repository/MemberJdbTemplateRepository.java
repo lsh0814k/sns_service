@@ -45,6 +45,12 @@ public class MemberJdbTemplateRepository implements MemberRepository {
         return Optional.ofNullable(member);
     }
 
+    @Override
+    public Member getById(Long id) {
+        Optional<Member> memberOptional = findById(id);
+        return memberOptional.orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+    }
+
     private Member insert(Member member) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
                 .withTableName("Member")
@@ -62,6 +68,11 @@ public class MemberJdbTemplateRepository implements MemberRepository {
     }
 
     private Member update(Member member) {
+        String sql = String.format("update %s set email = :email, nickname = :nickname, birthday = :birthday " +
+                "where id = :id", TABLE);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
+        namedParameterJdbcTemplate.update(sql, params);
+
         return member;
     }
 }
