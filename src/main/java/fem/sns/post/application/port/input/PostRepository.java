@@ -16,5 +16,9 @@ public interface PostRepository {
 
     void bulkInsert(List<Post> posts);
 
-    Page<PostResponse> findAllByMemberId(Long memberId, Pageable pageable);
+    Page<PostResponse> findAllByMemberIdAndOrderByIdDesc(Long memberId, Pageable pageable);
+
+    List<PostResponse> findAllByMemberIdAndOrderByIdDesc(Long memberId, long size);
+
+    List<PostResponse> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, long size);
 }

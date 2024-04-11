@@ -73,7 +73,7 @@ public class PostJdbcTemplateRepository implements PostRepository {
     }
 
     @Override
-    public Page<PostResponse> findAllByMemberId(Long memberId, Pageable pageable) {
+    public Page<PostResponse> findAllByMemberIdAndOrderByIdDesc(Long memberId, Pageable pageable) {
         String sql = String.format(
                 "select * " +
                 "from %s " +
@@ -88,6 +88,38 @@ public class PostJdbcTemplateRepository implements PostRepository {
 
         List<PostResponse> posts = namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
         return new PageImpl<>(posts, pageable, getCount(memberId));
+    }
+
+    @Override
+    public List<PostResponse> findAllByMemberIdAndOrderByIdDesc(Long memberId, long size) {
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where memberId = :memberId " +
+                "order by id desc " +
+                "limit :size ", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
+    }
+
+    @Override
+    public List<PostResponse> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, long size) {
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where memberId = :memberId " +
+                "and id < :id " +
+                "order by id desc " +
+                "limit :size ", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("id", id)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
     }
 
     private Long getCount(Long memberId) {

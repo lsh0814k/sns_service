@@ -2,9 +2,7 @@ package fem.sns.post.framework.web;
 
 import fem.sns.post.application.PostReadService;
 import fem.sns.post.application.PostWriteService;
-import fem.sns.post.application.dto.DailyPostCount;
-import fem.sns.post.application.dto.DailyPostCountRequest;
-import fem.sns.post.application.dto.PostResponse;
+import fem.sns.post.application.dto.*;
 import fem.sns.post.framework.web.request.PostRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,5 +30,13 @@ public class PostController {
     @GetMapping("/{memberId}")
     public Page<PostResponse> getPosts(@PathVariable Long memberId, Pageable pageable) {
         return postReadService.getPosts(memberId, pageable);
+    }
+
+    @GetMapping("/{memberId}/by-cursor")
+    public CursorResponse<PostResponse> getPostsByCursor(
+            @PathVariable Long memberId,
+            CursorRequest cursorRequest
+    ) {
+        return postReadService.getPosts(memberId, cursorRequest);
     }
 }
