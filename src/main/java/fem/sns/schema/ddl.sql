@@ -26,3 +26,13 @@ create table Follow (
     constraint follow_id_uindx
         primary key (id)
 );
+
+create table Post (
+      id int auto_increment,
+      memberId int not null,
+      contents varchar(255) not null,
+      createDate date not null,
+      createAt datetime not null,
+      constraint post_id_uindx
+                primary key (id)
+);
