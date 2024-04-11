@@ -2,7 +2,10 @@ package fem.sns.post.application.port.input;
 
 import fem.sns.post.application.dto.DailyPostCount;
 import fem.sns.post.application.dto.DailyPostCountRequest;
+import fem.sns.post.application.dto.PostResponse;
 import fem.sns.post.domain.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,4 +15,6 @@ public interface PostRepository {
     List<DailyPostCount> groupByCreatedDate(DailyPostCountRequest dailyPostCountRequest);
 
     void bulkInsert(List<Post> posts);
+
+    Page<PostResponse> findAllByMemberId(Long memberId, Pageable pageable);
 }
