@@ -21,4 +21,8 @@ public interface PostRepository {
     List<PostResponse> findAllByMemberIdAndOrderByIdDesc(Long memberId, long size);
 
     List<PostResponse> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, long size);
+
+    List<PostResponse> findAllByInMemberIdAndOrderByIdDesc(List<Long> memberIds, long size);
+
+    List<PostResponse> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, long size);
 }

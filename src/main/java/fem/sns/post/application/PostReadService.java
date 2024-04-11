@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.OptionalLong;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +26,31 @@ public class PostReadService {
 
     public CursorResponse<PostResponse> getPosts(Long memberId, CursorRequest cursorRequest) {
         List<PostResponse> posts = findAllBy(memberId, cursorRequest);
-        long nextKey = posts.stream()
+        long nextKey = getNextKey(posts);
+
+        return new CursorResponse<>(cursorRequest.next(nextKey), posts);
+    }
+
+    private static long getNextKey(List<PostResponse> posts) {
+        return posts.stream()
                 .mapToLong(PostResponse::getId)
                 .min()
                 .orElse(CursorRequest.NONE_KEY);
+    }
+
+    public CursorResponse<PostResponse> getPosts(List<Long> memberIds, CursorRequest cursorRequest) {
+        List<PostResponse> posts = findAllBy(memberIds, cursorRequest);
+        long nextKey = getNextKey(posts);
 
         return new CursorResponse<>(cursorRequest.next(nextKey), posts);
+    }
+
+    private List<PostResponse> findAllBy(List<Long> memberIds, CursorRequest cursorRequest) {
+        if (cursorRequest.hasKey()) {
+            return postRepository.findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(cursorRequest.key(), memberIds, cursorRequest.size());
+        }
+
+        return postRepository.findAllByInMemberIdAndOrderByIdDesc(memberIds, cursorRequest.size());
     }
 
     private List<PostResponse> findAllBy(Long memberId, CursorRequest cursorRequest) {

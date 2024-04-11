@@ -122,6 +122,44 @@ public class PostJdbcTemplateRepository implements PostRepository {
         return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
     }
 
+    @Override
+    public List<PostResponse> findAllByInMemberIdAndOrderByIdDesc(List<Long> memberIds, long size) {
+        if (memberIds == null || memberIds.isEmpty()) {
+            return List.of();
+        }
+
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where memberId in  (:memberIds) " +
+                "order by id desc " +
+                "limit :size ", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberIds", memberIds)
+                .addValue("size", size);
+        return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
+    }
+
+    @Override
+    public List<PostResponse> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, long size) {
+        if (memberIds == null || memberIds.isEmpty()) {
+            return List.of();
+        }
+
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where memberId in (:memberIds) " +
+                "and id < :id " +
+                "order by id desc " +
+                "limit :size ", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberIds", memberIds)
+                .addValue("id", id)
+                .addValue("size", size);
+        return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
+    }
+
     private Long getCount(Long memberId) {
         String sql = String.format(
                 "select count(id) " +

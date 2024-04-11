@@ -1,5 +1,6 @@
 package fem.sns.post.framework.web;
 
+import fem.sns.application.usecase.GetTimelinePostUsecase;
 import fem.sns.post.application.PostReadService;
 import fem.sns.post.application.PostWriteService;
 import fem.sns.post.application.dto.*;
@@ -17,6 +18,7 @@ import java.util.List;
 public class PostController {
     private final PostWriteService postWriteService;
     private final PostReadService postReadService;
+    private final GetTimelinePostUsecase getTimelinePostUsecase;
     @PostMapping
     public Long create(PostRequest postRequest) {
         return postWriteService.create(postRequest.toModel());
@@ -39,4 +41,13 @@ public class PostController {
     ) {
         return postReadService.getPosts(memberId, cursorRequest);
     }
+
+    @GetMapping("/member/{memberId}/timeline")
+    public CursorResponse<PostResponse> getTimeline(
+            @PathVariable Long memberId,
+            CursorRequest cursorRequest
+    ) {
+        return getTimelinePostUsecase.execute(memberId, cursorRequest);
+    }
+
 }
