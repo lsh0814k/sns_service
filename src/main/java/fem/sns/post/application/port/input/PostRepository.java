@@ -10,4 +10,6 @@ public interface PostRepository {
     Post save(Post post);
 
     List<DailyPostCount> groupByCreatedDate(DailyPostCountRequest dailyPostCountRequest);
+
+    void bulkInsert(List<Post> posts);
 }

@@ -46,6 +46,17 @@ public class PostJdbcTemplateRepository implements PostRepository {
         return namedParameterJdbcTemplate.query(sql, params, DAILY_POST_COUNT_ROW_MAPPER);
     }
 
+    @Override
+    public void bulkInsert(List<Post> posts) {
+        String sql = String.format(
+                "insert into %s (memberId, contents, createDate, createAt) " +
+                        "values (:memberId, :contents, :createDate, :createAt)", TABLE);
+        SqlParameterSource[] params = posts.stream()
+                .map(BeanPropertySqlParameterSource::new)
+                .toArray(SqlParameterSource[]::new);
+        namedParameterJdbcTemplate.batchUpdate(sql, params);
+    }
+
     private Post insert(Post post) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
                 .withTableName(TABLE)
