@@ -36,3 +36,12 @@ create table Post (
       constraint post_id_uindx
                 primary key (id)
 );
+
+create index POST__index_member_id
+    on Post (memberId);
+
+create index POST__index_create_date
+    on Post (createDate);
+
+create index POST__index_member_id_create_date
+    on Post (memberId, createAt);
