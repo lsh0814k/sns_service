@@ -45,6 +45,10 @@ public class PostReadService {
         return new CursorResponse<>(cursorRequest.next(nextKey), posts);
     }
 
+    public List<PostResponse> getPosts(List<Long> ids) {
+        return postRepository.findAllByInId(ids);
+    }
+
     private List<PostResponse> findAllBy(List<Long> memberIds, CursorRequest cursorRequest) {
         if (cursorRequest.hasKey()) {
             return postRepository.findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(cursorRequest.key(), memberIds, cursorRequest.size());

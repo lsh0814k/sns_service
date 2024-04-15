@@ -30,7 +30,7 @@ public class FollowJdbcTemplateRepository implements FollowRepository {
 
     @Override
     public List<Follow> findAllByFromMemberId(Long fromMemberId) {
-        String sql = "select * from Follow where fromMemberId = :fromMemberId";
+        String sql = String.format("select * from %s where fromMemberId = :fromMemberId", TABLE);
         SqlParameterSource params = new MapSqlParameterSource().addValue("fromMemberId", fromMemberId);
         RowMapper<Follow> rowMapper = (resultSet, rowNum) ->
                 Follow.builder()
@@ -39,6 +39,20 @@ public class FollowJdbcTemplateRepository implements FollowRepository {
                         .toMemberId(resultSet.getLong("toMemberId"))
                         .createAt(resultSet.getObject("createAt", LocalDateTime.class))
                     .build();
+        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
+    }
+
+    @Override
+    public List<Follow> findAllByToMemberId(Long toMemberId) {
+        String sql = String.format("select * from %s where toMemberId = :toMemberId", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource().addValue("toMemberId", toMemberId);
+        RowMapper<Follow> rowMapper = (resultSet, rowNum) ->
+                Follow.builder()
+                        .id(resultSet.getLong("id"))
+                        .fromMemberId(resultSet.getLong("fromMemberId"))
+                        .toMemberId(resultSet.getLong("toMemberId"))
+                        .createAt(resultSet.getObject("createAt", LocalDateTime.class))
+                        .build();
         return namedParameterJdbcTemplate.query(sql, params, rowMapper);
     }
 

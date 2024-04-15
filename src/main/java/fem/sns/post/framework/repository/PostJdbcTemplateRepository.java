@@ -160,6 +160,20 @@ public class PostJdbcTemplateRepository implements PostRepository {
         return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
     }
 
+    public List<PostResponse> findAllByInId(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where id in (:ids) ", TABLE);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("ids", ids);
+        return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
+    }
+
     private Long getCount(Long memberId) {
         String sql = String.format(
                 "select count(id) " +

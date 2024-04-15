@@ -1,5 +1,6 @@
 package fem.sns.post.framework.web;
 
+import fem.sns.application.usecase.CreatePostUsecase;
 import fem.sns.application.usecase.GetTimelinePostUsecase;
 import fem.sns.post.application.PostReadService;
 import fem.sns.post.application.PostWriteService;
@@ -16,12 +17,13 @@ import java.util.List;
 @RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
+    private final CreatePostUsecase createPostUsecase;
     private final PostWriteService postWriteService;
     private final PostReadService postReadService;
     private final GetTimelinePostUsecase getTimelinePostUsecase;
     @PostMapping
     public Long create(PostRequest postRequest) {
-        return postWriteService.create(postRequest.toModel());
+        return createPostUsecase.execute(postRequest.toModel());
     }
 
     @GetMapping("/daily-post-counts")
@@ -47,7 +49,7 @@ public class PostController {
             @PathVariable Long memberId,
             CursorRequest cursorRequest
     ) {
-        return getTimelinePostUsecase.execute(memberId, cursorRequest);
+        return getTimelinePostUsecase.executeByTimeline(memberId, cursorRequest);
     }
 
 }

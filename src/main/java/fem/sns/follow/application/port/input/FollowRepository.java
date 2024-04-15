@@ -8,4 +8,6 @@ public interface FollowRepository {
     Follow save(Follow follow);
 
     List<Follow> findAllByFromMemberId(Long fromMemberId);
+
+    List<Follow> findAllByToMemberId(Long toMemberId);
 }
