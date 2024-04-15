@@ -45,3 +45,14 @@ create index POST__index_create_date
 
 create index POST__index_member_id_create_date
     on Post (memberId, createAt);
+
+
+create table timeline
+(
+    id int auto_increment,
+    memberId int not null,
+    postID int not null,
+    createAt datetime not null,
+    constraint Timeline_id_uindex
+        primary key (id)
+)
