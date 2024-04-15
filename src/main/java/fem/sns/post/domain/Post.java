@@ -16,11 +16,13 @@ public class Post {
     private String contents;
     private LocalDate createDate;
     private LocalDateTime createAt;
+    private long likeCount;
 
     public static Post create(PostCreate postCreate) {
         return Post.builder()
                 .memberId(postCreate.getMemberId())
                 .contents(postCreate.getContents())
+                .likeCount(0)
                 .createAt(LocalDateTime.now())
                 .createDate(LocalDate.now())
                 .build();

@@ -15,6 +15,7 @@ public class PostResponse {
     private Long id;
     private Long memberId;
     private String contents;
+    private long likeCount;
     private LocalDate createDate;
     private LocalDateTime createAt;
 }

@@ -36,6 +36,7 @@ public class PostJdbcTemplateRepository implements PostRepository {
             .id(resultSet.getLong("id"))
             .memberId(resultSet.getLong("memberId"))
             .contents(resultSet.getString("contents"))
+            .likeCount(resultSet.getLong("likeCount"))
             .createAt(resultSet.getObject("createAt", LocalDateTime.class))
             .createDate(resultSet.getObject("createDate", LocalDate.class))
             .build();
