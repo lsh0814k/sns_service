@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository {
     Post save(Post post);
@@ -27,4 +28,6 @@ public interface PostRepository {
     List<PostResponse> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, long size);
 
     List<PostResponse> findAllByInId(List<Long> ids);
+
+    Optional<Post> findById(Long postId);
 }

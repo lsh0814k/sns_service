@@ -28,4 +28,8 @@ public class Post {
                 .build();
     }
 
+    public void incrementLikeCount() {
+        likeCount += 1;
+    }
+
 }

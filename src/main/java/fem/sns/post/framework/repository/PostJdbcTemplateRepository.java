@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,6 +33,14 @@ public class PostJdbcTemplateRepository implements PostRepository {
                     resultset.getLong("memberId"),
                     resultset.getObject("createDate", LocalDate.class),
                     resultset.getLong("count"));
+    private static final RowMapper<Post> POST_ROW_MAPPER = (resultSet, num) -> Post.builder()
+            .id(resultSet.getLong("id"))
+            .memberId(resultSet.getLong("memberId"))
+            .contents(resultSet.getString("contents"))
+            .likeCount(resultSet.getLong("likeCount"))
+            .createAt(resultSet.getObject("createAt", LocalDateTime.class))
+            .createDate(resultSet.getObject("createDate", LocalDate.class))
+            .build();
     private static final RowMapper<PostResponse> POST_RESPONSE_ROW_MAPPER = (resultSet, num) -> PostResponse.builder()
             .id(resultSet.getLong("id"))
             .memberId(resultSet.getLong("memberId"))
@@ -45,9 +54,18 @@ public class PostJdbcTemplateRepository implements PostRepository {
     public Post save(Post post) {
         if (post.getId() == null) {
             return insert(post);
+        } else {
+            return update(post);
         }
+    }
 
-        throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
+    private Post update(Post post) {
+        String sql = String.format("update %s set contents = :contents, likeCount = :likeCount " +
+                "where id = :id", TABLE);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(post);
+        namedParameterJdbcTemplate.update(sql, params);
+
+        return post;
     }
 
     @Override
@@ -159,6 +177,19 @@ public class PostJdbcTemplateRepository implements PostRepository {
                 .addValue("id", id)
                 .addValue("size", size);
         return namedParameterJdbcTemplate.query(sql, params, POST_RESPONSE_ROW_MAPPER);
+    }
+
+    @Override
+    public Optional<Post> findById(Long postId) {
+        String sql = String.format(
+                "select * " +
+                "from %s " +
+                "where id = :id", TABLE
+        );
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", postId);
+        Post nullablePost = namedParameterJdbcTemplate.queryForObject(sql, params, POST_ROW_MAPPER);
+        return Optional.ofNullable(nullablePost);
     }
 
     public List<PostResponse> findAllByInId(List<Long> ids) {
